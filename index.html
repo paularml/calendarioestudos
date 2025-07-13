@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário Unificado de Estudos 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ---------- MENU DE MESES (TABS) ---------- */
+        .month-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .month-btn {
+            background: white;
+            border: 2px solid #ecf0f1;
+            border-radius: 25px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all .25s ease;
+        }
+        .month-btn:hover,
+        .month-btn.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto 100px; /* espaço para contagem regressiva fixa */
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .cpnu { background: #f39c12; }
+        .facul { background: #3498db; }
+        .pnd { background: #2ecc71; }
+        .prova { background: #e74c3c; }
+
+        /* ---------- ESTRUTURA PRINCIPAL ---------- */
+        .calendar-section {
+            margin-top: 20px;
+        }
+
+        .month-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin: 0 auto; /* centraliza */
+            max-width: 100%;
+        }
+
+        .month-card:not(.active-month) {
+            display: none;
+        }
+
+        .month-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #ecf0f1;
+        }
+
+        .month-name {
+            font-size: 1.8em;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .event {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 5px solid;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .event:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-cpnu { border-left-color: #f39c12; }
+        .event-facul { border-left-color: #3498db; }
+        .event-pnd { border-left-color: #2ecc71; }
+        .event-prova {
+            border-left-color: #e74c3c;
+            background: linear-gradient(45deg, #ffe6e6, #ffffff);
+            font-weight: bold;
+        }
+
+        .event-content { flex: 1; }
+
+        .event-date {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 0.9em;
+        }
+
+        .event-title {
+            margin-top: 5px;
+            color: #34495e;
+            font-size: 1em;
+            line-height: 1.4;
+        }
+
+        .event-category {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+            color: white;
+            margin-top: 5px;
+        }
+
+        .cat-cpnu { background: #f39c12; }
+        .cat-facul { background: #3498db; }
+        .cat-pnd  { background: #2ecc71; }
+        .cat-prova { background: #e74c3c; }
+
+        .event-checkbox {
+            margin-top: 5px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* ---------- CONTAGEM REGRESSIVA FIXA ---------- */
+        .countdown-bar{position:fixed;bottom:0;left:0;width:100%;background:#c0392b;color:#fff;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:8px 5px 10px;z-index:1000;font-size:.9em;}
+        .countdown-item{background:rgba(255,255,255,.18);padding:6px 10px;border-radius:10px;min-width:150px;text-align:center;}
+        .countdown-item h4{font-size:.9em;margin-bottom:4px;font-weight:600;}
+        .days{font-size:1.25em;font-weight:700;}
+        /* ---------- RESPONSIVO ---------- */
+        @media(max-width:768px){.month-btn{font-size:.85em;padding:6px 12px;}.event{flex-direction:column;}.days{font-size:1.05em;}.countdown-item{min-width:140px;}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Calendário Unificado de Estudos 2025</h1>
+            <p>Organize seus estudos com todas as datas importantes</p>
+        </div>
+
+        <!-- ############## MENU DE MESES ############## -->
+        <nav class="month-nav" id="monthNav">
+            <button class="month-btn active" data-month="julho">Julho</button>
+            <button class="month-btn" data-month="agosto">Agosto</button>
+            <button class="month-btn" data-month="setembro">Setembro</button>
+            <button class="month-btn" data-month="outubro">Outubro</button>
+            <button class="month-btn" data-month="novembro">Novembro</button>
+            <button class="month-btn" data-month="dezembro">Dezembro</button>
+            <button class="month-btn" data-month="janeiro">Janeiro</button>
+        </nav>
+
+        <!-- ############## LEGENDA ############## -->
+        <div class="legend">
+            <div class="legend-item"><div class="legend-color cpnu"></div><span>CPNU</span></div>
+            <div class="legend-item"><div class="legend-color facul"></div><span>Faculdade</span></div>
+            <div class="legend-item"><div class="legend-color pnd"></div><span>PND</span></div>
+            <div class="legend-item"><div class="legend-color prova"></div><span>🎯 PROVAS</span></div>
+        </div>
+
+        <!-- ############## CALENDÁRIO (APENAS UM MÊS VISÍVEL POR VEZ) ############## -->
+        <div class="calendar-section">
+            <!-- JULHO 2025 -->
+            <div class="month-card active-month" id="mes-julho">
+                <div class="month-header"><div class="month-name">Julho 2025</div></div>
+                <!-- --- eventos de julho (copiados do original) --- -->
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">02/07 a 20/07/2025</div><div class="event-title">Inscrições CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">02/07 a 08/07/2025</div><div class="event-title">Solicitação de isenção CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">10/07/2025</div><div class="event-title">Resultado preliminar isenção CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">11/07 a 14/07/2025</div><div class="event-title">Recursos isenção CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-pnd"><div class="event-content"><div class="event-date">14/07 a 25/07/2025</div><div class="event-title">🎯 Inscrições PND</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-facul"><div class="event-content"><div class="event-date">14/07 a 18/07/2025</div><div class="event-title">Aula Inaugural - Turma 2025/07</div><span class="event-category cat-facul">FACUL</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">18/07/2025</div><div class="event-title">Relação de isenção deferida CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-facul"><div class="event-content"><div class="event-date">21/07 a 30/08/2025</div><div class="event-title">Período de aula Fase II</div><span class="event-category cat-facul">FACUL</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-facul"><div class="event-content"><div class="event-date">21/07 a 01/09/2025</div><div class="event-title">🎯 Apol 1</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">21/07/2025</div><div class="event-title">Data final pagamento taxa CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-pnd"><div class="event-content"><div class="event-date">14/07 a 31/07/2025</div><div class="event-title">Pagamento taxa inscrição PND</div><span class="event-category cat-pnd">PND</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">31/07/2025</div><div class="event-title">Relação Preliminar inscrições CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+            </div>
+
+            <!-- AGOSTO 2025 -->
+            <div class="month-card" id="mes-agosto">
+                <div class="month-header"><div class="month-name">Agosto 2025</div></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">01/08 a 04/08/2025</div><div class="event-title">Recursos indeferimento inscrição CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-pnd"><div class="event-content"><div class="event-date">01/08/2025</div><div class="event-title">Resultado atendimento especializado PND</div><span class="event-category cat-pnd">PND</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-pnd"><div class="event-content"><div class="event-date">04/08 a 08/08/2025</div><div class="event-title">Recurso atendimento especializado PND</div><span class="event-category cat-pnd">PND</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-facul"><div class="event-content"><div class="event-date">10/08/2025</div><div class="event-title">Feriado - Dia dos Pais</div><span class="event-category cat-facul">FACUL</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-facul"><div class="event-content"><div class="event-date">11/08 a 01/09/2025</div><div class="event-title">🎯 Apol 2</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-pnd"><div class="event-content"><div class="event-date">13/08/2025</div><div class="event-title">Resultado recurso atendimento PND</div><span class="event-category cat-pnd">PND</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-cpnu"><div class="event-content"><div class="event-date">18/08/2025</div><div class="event-title">🎯 Relação Definitiva inscrições CPNU</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+            </div>
+
+            <!-- SETEMBRO 2025 -->
+            <div class="month-card" id="mes-setembro">
+                <div class="month-header"><div class="month-name">Setembro 2025</div></div>
+                <div class="event event-prova event-facul"><div class="event-content"><div class="event-date">01/09 a 22/09/2025</div><div class="event-title">🎯 PROVAS REGULARES PRESENCIAL</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-cpnu"><div class="event-content"><div class="event-date">22/09/2025</div><div class="event-title">🎯 Cartão de Confirmação CPNU</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-facul"><div class="event-content"><div class="event-date">29/09 a 20/10/2025</div><div class="event-title">🎯 2ª Chamada: Provas Presencial</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-facul"><div class="event-content"><div class="event-date">29/09 a 20/10/2025</div><div class="event-title">2ª Chamada: Solicitação</div><span class="event-category cat-facul">FACUL</span></div><input type="checkbox" class="event-checkbox"></div>
+            </div>
+
+            <!-- OUTUBRO 2025 -->
+            <div class="month-card" id="mes-outubro">
+                <div class="month-header"><div class="month-name">Outubro 2025</div></div>
+                <div class="event event-prova event-cpnu"><div class="event-content"><div class="event-date">05/10/2025</div><div class="event-title">🎯 PROVA OBJETIVA CPNU</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">06/10/2025</div><div class="event-title">Gabaritos preliminares CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">07/10 a 08/10/2025</div><div class="event-title">Recursos gabaritos CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-pnd"><div class="event-content"><div class="event-date">26/10/2025</div><div class="event-title">🎯 PROVA NACIONAL DOCENTE</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-pnd"><div class="event-content"><div class="event-date">28/10/2025</div><div class="event-title">Gabaritos preliminares PND</div><span class="event-category cat-pnd">PND</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-pnd"><div class="event-content"><div class="event-date">28/10 a 29/10/2025</div><div class="event-title">Recurso gabarito PND</div><span class="event-category cat-pnd">PND</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-facul"><div class="event-content"><div class="event-date">27/10 a 10/11/2025</div><div class="event-title">Exame</div><span class="event-category cat-facul">FACUL</span></div><input type="checkbox" class="event-checkbox"></div>
+            </div>
+
+            <!-- NOVEMBRO 2025 -->
+            <div class="month-card" id="mes-novembro">
+                <div class="month-header"><div class="month-name">Novembro 2025</div></div>
+                <div class="event event-pnd"><div class="event-content"><div class="event-date">10/11/2025</div><div class="event-title">Resultado recurso gabarito PND</div><span class="event-category cat-pnd">PND</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-pnd"><div class="event-content"><div class="event-date">11/11/2025</div><div class="event-title">Gabarito final PND</div><span class="event-category cat-pnd">PND</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-facul"><div class="event-content"><div class="event-date">11/11 a 20/12/2025</div><div class="event-title">Recuperação de conceito - RCP</div><span class="event-category cat-facul">FACUL</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-cpnu"><div class="event-content"><div class="event-date">12/11/2025</div><div class="event-title">🎯 Notas finais objetivas e convocação discursiva</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-cpnu"><div class="event-content"><div class="event-date">12/11/2025</div><div class="event-title">🎯 Convocação Avaliação de Títulos</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">12/11/2025</div><div class="event-title">Imagem cartão de respostas CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">13/11 a 19/11/2025</div><div class="event-title">Envio de Títulos CPNU</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-pnd"><div class="event-content"><div class="event-date">25/11/2025</div><div class="event-title">Correção preliminar questão discursiva</div><span class="event-category cat-pnd">PND</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-pnd"><div class="event-content"><div class="event-date">25/11 a 26/11/2025</div><div class="event-title">Recurso correção discursiva PND</div><span class="event-category cat-pnd">PND</span></div><input type="checkbox" class="event-checkbox"></div>
+            </div>
+
+            <!-- DEZEMBRO 2025 -->
+            <div class="month-card" id="mes-dezembro">
+                <div class="month-header"><div class="month-name">Dezembro 2025</div></div>
+                <div class="event event-prova event-cpnu"><div class="event-content"><div class="event-date">01/12/2025</div><div class="event-title">🎯 Cartão Confirmação Prova Discursiva</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-cpnu"><div class="event-content"><div class="event-date">07/12/2025</div><div class="event-title">🎯 PROVA DISCURSIVA CPNU</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-cpnu"><div class="event-content"><div class="event-date">08/12 a 17/12/2025</div><div class="event-title">🎯 Verificação condição vagas reservadas</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-prova event-pnd"><div class="event-content"><div class="event-date">10/12/2025</div><div class="event-title">🎯 Resultado final PND</div><span class="event-category cat-prova">PROVA</span></div><input type="checkbox" class="event-checkbox"></div>
+            </div>
+
+            <!-- --- JANEIRO 2026 (NOVO) --- -->
+            <div class="month-card" id="mes-janeiro">
+                <div class="month-header"><div class="month-name">Janeiro 2026</div></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">02/01/2026</div><div class="event-title">Resultado preliminar da Avaliação de Títulos</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">02/01/2026</div><div class="event-title">Resultados preliminares verificação de autodeclaração e deficiência</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">05/01 a 06/01/2026</div><div class="event-title">Recursos contra resultado preliminar da Avaliação de Títulos</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">05/01 a 06/01/2026</div><div class="event-title">Recursos sobre autodeclaração e deficiência</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">06/01/2026</div><div class="event-title">Nota Preliminar da Discursiva + espelho</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">07/01 a 08/01/2026</div><div class="event-title">Pedidos de revisão das notas da Discursiva</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">30/01/2026</div><div class="event-title">Resultado definitivo dos títulos e procedimentos de cota/deficiência</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+                <div class="event event-cpnu"><div class="event-content"><div class="event-date">30/01/2026</div><div class="event-title">Divulgação das listas de classificação e convocações</div><span class="event-category cat-cpnu">CPNU</span></div><input type="checkbox" class="event-checkbox"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ############## CONTAGEM REGRESSIVA FIXA ############## -->
+    <div class="countdown-bar">
+        <div class="countdown-item"><h4>Provas Regulares Facul.</h4><div class="days" id="count-facul"></div></div>
+        <div class="countdown-item"><h4>Prova Nacional Doc.</h4><div class="days" id="count-pnd"></div></div>
+        <div class="countdown-item"><h4>CPNU Objetiva</h4><div class="days" id="count-cpnu-obj"></div></div>
+        <div class="countdown-item"><h4>CPNU Discursiva</h4><div class="days" id="count-cpnu-disc"></div></div>
+    </div>
+    <script>
+        /* ------------ TABS ------------ */
+        const btns=document.querySelectorAll('.month-btn');
+        const months={julho:document.getElementById('mes-julho'),agosto:document.getElementById('mes-agosto'),setembro:document.getElementById('mes-setembro'),outubro:document.getElementById('mes-outubro'),novembro:document.getElementById('mes-novembro'),dezembro:document.getElementById('mes-dezembro'),janeiro:document.getElementById('mes-janeiro')};
+        btns.forEach(btn=>btn.addEventListener('click',()=>{btns.forEach(b=>b.classList.remove('active'));btn.classList.add('active');Object.values(months).forEach(m=>m.classList.remove('active-month'));months[btn.dataset.month].classList.add('active-month');document.querySelector('.container').scrollIntoView({behavior:'smooth'});}));
+        /* ------------ COUNTDOWN ------------ */
+        const countdowns=[
+            {id:'count-facul',date:'2025-09-01T00:00:00'},
+            {id:'count-pnd',date:'2025-10-26T00:00:00'},
+            {id:'count-cpnu-obj',date:'2025-10-05T00:00:00'},
+            {id:'count-cpnu-disc',date:'2025-12-07T00:00:00'}
+        ];
+        function updateCountdown(){const now=new Date();countdowns.forEach(c=>{const diff=new Date(c.date)-now;const el=document.getElementById(c.id);if(diff<=0){el.textContent='0 dias';return;}el.textContent=Math.floor(diff/864e5)+' dias';});}
+        updateCountdown();setInterval(updateCountdown,3600000);
+    </script>
+</body>
+</html>
