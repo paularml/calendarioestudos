@@ -883,17 +883,21 @@
     <!-- ############## CONTAGEM REGRESSIVA FIXA ############## -->
     <div class="countdown-bar">
       <div class="countdown-item">
-        <h4>Provas Regulares Facul.</h4>
+        <h4>Provas Regulares Facul</h4>
         <div class="days" id="count-facul"></div>
-      </div>
-      <div class="countdown-item">
-        <h4>Prova Nacional Doc.</h4>
-        <div class="days" id="count-pnd"></div>
       </div>
       <div class="countdown-item">
         <h4>CPNU Objetiva</h4>
         <div class="days" id="count-cpnu-obj"></div>
       </div>
+      <div class="countdown-item">
+        <h4>Itapoá</h4>
+        <div class="days" id="count-itapoa"></div>
+      </div>
+      <div class="countdown-item">
+        <h4>PND</h4>
+        <div class="days" id="count-pnd"></div>
+      </div>      
       <div class="countdown-item">
         <h4>CPNU Discursiva</h4>
         <div class="days" id="count-cpnu-disc"></div>
@@ -927,8 +931,9 @@
       /* ------------ COUNTDOWN ------------ */
       const countdowns = [
         { id: "count-facul", date: "2025-09-01T00:00:00" },
-        { id: "count-pnd", date: "2025-10-26T00:00:00" },
         { id: "count-cpnu-obj", date: "2025-10-05T00:00:00" },
+        { id: "count-itapoa", date: "2025-10-19T00:00:00" },
+        { id: "count-pnd", date: "2025-10-26T00:00:00" },        
         { id: "count-cpnu-disc", date: "2025-12-07T00:00:00" },
       ];
       function updateCountdown() {
